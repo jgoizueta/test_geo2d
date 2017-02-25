@@ -1,0 +1,18 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    geo2d (0.1.3)
+    graphics (1.0.0b6)
+      rsdl (~> 0.1)
+    rsdl (0.1.5)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  geo2d
+  graphics (>= 1.0.0b6)
+  rsdl
+
+BUNDLED WITH
+   1.14.3

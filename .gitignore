@@ -1,0 +1,11 @@
+## Environment normalization:
+/.bundle/
+/vendor/bundle
+/lib/bundler/man/
+
+### VisualStudioCode ###
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json

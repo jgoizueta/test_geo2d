@@ -5,8 +5,6 @@ This is a visual test of the [Geo2D](https://github.com/jgoizueta/Geo2D) functio
 This was originally implemented using [ruby-procession](https://github.com/jashkenas/ruby-processing)
 and I've adapted it to check out the new SDL-based [graphics](https://github.com/zenspider/graphics) gem.
 
-The `test.rb` script must be executed with [`rsdl`](https://github.com/knu/rsdl) rather than `ruby`.
-
 The test program will open a graphics windows in which a path can be drawn with the mouse,
 which will be followed by the moving dots/labels:
 

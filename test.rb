@@ -13,9 +13,8 @@ class Numeric
 end
 
 class Test <  Graphics::Simulation
-
   def initialize(title: 'Test', width: 600, height: 600)
-    super width, height, 24
+    super width, height
     reset
     @draw = false
   end
@@ -55,42 +54,46 @@ class Test <  Graphics::Simulation
 
   # draw rotated text txt at x, y with angle
   # if a color is assigned to parameter box a bounding box is drawn
-  def rotated_text(txt, x:, y:, angle: 0, mode: :center, tfont: font, color: :black, box: false, halign: :center, valign: :center)
+  def rotated_text(txt, x:, y:, angle: 0, mode: :center, tfont: font, color: :black, box: false, align: :center)
     angle_r = angle*Math::PI/180
     img = render_text(txt, color, tfont)
     tw = img.w*Math.cos(angle_r).abs + img.h*Math.sin(angle_r).abs
     th = img.h*Math.cos(angle_r).abs + img.w*Math.sin(angle_r).abs
 
-    case halign
-    when :left
-      xd = 0
-    when :right
-      xd = -tw
-    when :center
-      xd = -tw/2
+    case quadrant(angle_r)
+    when 0
+      sx = -img.h*Math.sin(angle_r)
+      sy = 0
+    when 1
+      sx = img.w*Math.cos(angle_r) - img.h*Math.sin(angle_r)
+      sy = img.h*Math.cos(angle_r)
+    when 2
+      sx = img.w*Math.cos(angle_r)
+      sy = img.w*Math.sin(angle_r) - img.h*Math.cos(Math::PI - angle_r)
+    when 3
+      sx = 0
+      sy = img.w*Math.sin(angle_r)
     end
 
-    case valign
-    when :top
-      yd = -th
-    when :bottom
+    case align
+    when :bottom_left
+      xd = 0
       yd = 0
     when :center
-      yd = -th/2
+      xd = -tw/2 - sx
+      yd = -th/2 - sy
+    when :top_right
+      xd = -tw - 2*sx
+      yd = -th - 2*sy
     end
 
-    rect x+xd,y+yd, tw, th, box if box
-    put img, x+xd, y+yd, angle
+    rect x+xd+sx,y+yd+sy, tw, th, box if box
+
+    put img, x+xd , y+yd, angle
   end
 
   def horizontal_text(txt, x:, y:, halign: :left, valign: :bottom, tfont: font, color: :black)
-    # this is equivalent to:
-    #   rotated_text(txt, x: x, y: y, halign: halign, valign: valign, tfont: tfont, color: color)
-
-    # tw, th = text_size(txt, tfont) # seems broken in 1.0.0b6
-    img = render_text(txt, color, tfont)
-    tw = img.w
-    th = img.h
+    tw, th = text_size(txt, tfont)
 
     case halign
     when :left
@@ -148,7 +151,8 @@ class Test <  Graphics::Simulation
 
     # draw whole path
     for i in 1...@line.n_points
-      line *@line.points[i-1].split, *@line.points[i].split, :red
+      # This is very slow (for long line segments) if using anti-aliasing
+      line *@line.points[i-1].split, *@line.points[i].split, :red, false
     end
 
     # draw right trail

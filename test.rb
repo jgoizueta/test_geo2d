@@ -26,6 +26,7 @@ class Test <  Graphics::Simulation
     @rot = 0
     @rt = []
     @lt = []
+    @stopped = false
   end
 
   def handle_event(event, n)
@@ -50,6 +51,7 @@ class Test <  Graphics::Simulation
     super
     add_keydown_handler(" "){ reset }
     add_keydown_handler("q"){ exit }
+    add_keydown_handler("s"){ @stopped = !@stopped }
   end
 
   # draw rotated text txt at x, y with angle
@@ -165,7 +167,7 @@ class Test <  Graphics::Simulation
       line *@lt[i-1].split, *@lt[i].split, :yellow
     end
 
-    advance_position
+    advance_position unless @stopped
 
     r1 = r2 = @rot
 

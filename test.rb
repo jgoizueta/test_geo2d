@@ -64,8 +64,7 @@ class Test <  Graphics::Simulation
   end
 
   # draw rotated text txt at x, y with angle
-  # if a color is assigned to parameter box a bounding box is drawn
-  def rotated_text(txt, x:, y:, angle: 0, mode: :center, tfont: font, color: :black, box: false, halign: :center, valign: :center)
+  def rotated_text(txt, x:, y:, angle: 0, tfont: font, color: :black, halign: :center, valign: :center)
     angle_r = angle*Math::PI/180
     img = render_text(txt, color, tfont)
 

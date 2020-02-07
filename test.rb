@@ -21,11 +21,22 @@ def align_position(width, height, halign, valign)
   [ -ALIGN[halign]*width, -ALIGN[valign]*height ]
 end
 
+def color_value(r: 0, g: 0, b: 0, alpha: 1)
+  (255*r).round | (255*g).round << 8 | (255*b).round << 16 | (255*alpha).round << 24
+end
+
+TRAIL_LENGTH = 20
+
 class Test <  Graphics::Simulation
   def initialize(title: 'Test', width: 600, height: 600)
     super width, height
     reset
     @draw = false
+  end
+
+  def line x1, y1, x2, y2, c, aa = true
+    c = color[c] unless c.kind_of?(Integer)
+    renderer.draw_line x1, h-y1-1, x2, h-y2-1, c, aa
   end
 
   def reset
@@ -129,12 +140,12 @@ class Test <  Graphics::Simulation
 
     # draw right trail
     for i in 1...@rt.size
-      line *@rt[i-1].split, *@rt[i].split, :white
+      line *@rt[i-1].split, *@rt[i].split, color_value(r: 1, g: 1, b: 1, alpha: i/TRAIL_LENGTH.to_f)
     end
 
     # draw left trail
     for i in 1...@lt.size
-      line *@lt[i-1].split, *@lt[i].split, :yellow
+      line *@lt[i-1].split, *@lt[i].split, color_value(r: 1, g: 1, alpha: i/TRAIL_LENGTH.to_f)
     end
 
     advance_position unless @stopped
@@ -155,8 +166,8 @@ class Test <  Graphics::Simulation
     @rt << rp
     ellipse rp.x, rp.y, 10, 10, :white, true
 
-    @rt.shift if @rt.size > 20
-    @lt.shift if @lt.size > 20
+    @rt.shift if @rt.size > TRAIL_LENGTH
+    @lt.shift if @lt.size > TRAIL_LENGTH
 
     # right label point
     rlp = @line.interpolate_point(@l,-@d*1.7,r2)

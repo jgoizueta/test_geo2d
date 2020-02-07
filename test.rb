@@ -18,7 +18,7 @@ ALIGN = {
   right: 1, top: 1
 }
 def align_position(width, height, halign, valign)
-  [ -ALIGN[halign]*width, -ALIGN[valign]*height ]
+  Geo2D::Vector(-ALIGN[halign]*width, -ALIGN[valign]*height)
 end
 
 def color_value(r: 0, g: 0, b: 0, alpha: 1)
@@ -78,7 +78,7 @@ class Test <  Graphics::Simulation
   def rotated_text(txt, x:, y:, angle: 0, tfont: font, color: :black, halign: :center, valign: :center)
     angle_r = angle*Math::PI/180
     img = render_text(txt, color, tfont)
-    d = Geo2D::Vector(align_position(img.w, img.h, halign, valign)).rotate(angle_r)
+    d = align_position(img.w, img.h, halign, valign).rotate(angle_r)
     put img, x+d.x, y+d.y, angle
   end
 
@@ -86,8 +86,8 @@ class Test <  Graphics::Simulation
     # this is equivalent to:
     #   rotated_text(txt, x: x, y: y, halign: halign, valign: valign, tfont: tfont, color: color)
     tw, th = text_size(txt, tfont)
-    xd, yd = align_position(tw, th, halign, valign)
-    text txt, x+xd, y+yd, color, tfont
+    d = align_position(tw, th, halign, valign)
+    text txt, x+d.x, y+d.y, color, tfont
   end
 
   # quadrant (0-3) of an angle

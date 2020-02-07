@@ -12,6 +12,15 @@ class Numeric
   end
 end
 
+ALIGN = {
+  left: 0, bottom: 0,
+  center: 0.5,
+  right: 1, top: 1
+}
+def align_position(width, height, halign, valign)
+  [ -ALIGN[halign]*width, -ALIGN[valign]*height ]
+end
+
 class Test <  Graphics::Simulation
   def initialize(title: 'Test', width: 600, height: 600)
     super width, height
@@ -56,64 +65,26 @@ class Test <  Graphics::Simulation
 
   # draw rotated text txt at x, y with angle
   # if a color is assigned to parameter box a bounding box is drawn
-  def rotated_text(txt, x:, y:, angle: 0, mode: :center, tfont: font, color: :black, box: false, align: :center)
+  def rotated_text(txt, x:, y:, angle: 0, mode: :center, tfont: font, color: :black, box: false, halign: :center, valign: :center)
     angle_r = angle*Math::PI/180
     img = render_text(txt, color, tfont)
-    tw = img.w*Math.cos(angle_r).abs + img.h*Math.sin(angle_r).abs
-    th = img.h*Math.cos(angle_r).abs + img.w*Math.sin(angle_r).abs
 
-    case quadrant(angle_r)
-    when 0
-      sx = -img.h*Math.sin(angle_r)
-      sy = 0
-    when 1
-      sx = img.w*Math.cos(angle_r) - img.h*Math.sin(angle_r)
-      sy = img.h*Math.cos(angle_r)
-    when 2
-      sx = img.w*Math.cos(angle_r)
-      sy = img.w*Math.sin(angle_r) - img.h*Math.cos(Math::PI - angle_r)
-    when 3
-      sx = 0
-      sy = img.w*Math.sin(angle_r)
-    end
+    xd, yd = align_position(img.w, img.h, halign, valign)
 
-    case align
-    when :bottom_left
-      xd = 0
-      yd = 0
-    when :center
-      xd = -tw/2 - sx
-      yd = -th/2 - sy
-    when :top_right
-      xd = -tw - 2*sx
-      yd = -th - 2*sy
-    end
+    s, c = Math.sin(angle_r), Math.cos(angle_r)
+    sx = xd*c - yd*s
+    sy = xd*s + yd*c
 
-    rect x+xd+sx,y+yd+sy, tw, th, box if box
-
-    put img, x+xd , y+yd, angle
+    put img, x+sx , y+sy, angle
   end
 
   def horizontal_text(txt, x:, y:, halign: :left, valign: :bottom, tfont: font, color: :black)
+    # this is equivalent to:
+    #   rotated_text(txt, x: x, y: y, halign: halign, valign: valign, tfont: tfont, color: color)
+
     tw, th = text_size(txt, tfont)
 
-    case halign
-    when :left
-      xd = 0
-    when :right
-      xd = -tw
-    when :center
-      xd = -tw/2
-    end
-
-    case valign
-    when :top
-      yd = -th
-    when :bottom
-      yd = 0
-    when :center
-      yd = -th/2
-    end
+    xd, yd = align_position(tw, th, halign, valign)
 
     text txt, x+xd, y+yd, color, tfont
   end

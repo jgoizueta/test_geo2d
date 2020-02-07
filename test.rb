@@ -78,24 +78,15 @@ class Test <  Graphics::Simulation
   def rotated_text(txt, x:, y:, angle: 0, tfont: font, color: :black, halign: :center, valign: :center)
     angle_r = angle*Math::PI/180
     img = render_text(txt, color, tfont)
-
-    xd, yd = align_position(img.w, img.h, halign, valign)
-
-    s, c = Math.sin(angle_r), Math.cos(angle_r)
-    sx = xd*c - yd*s
-    sy = xd*s + yd*c
-
-    put img, x+sx , y+sy, angle
+    d = Geo2D::Vector(align_position(img.w, img.h, halign, valign)).rotate(angle_r)
+    put img, x+d.x, y+d.y, angle
   end
 
   def horizontal_text(txt, x:, y:, halign: :left, valign: :bottom, tfont: font, color: :black)
     # this is equivalent to:
     #   rotated_text(txt, x: x, y: y, halign: halign, valign: valign, tfont: tfont, color: color)
-
     tw, th = text_size(txt, tfont)
-
     xd, yd = align_position(tw, th, halign, valign)
-
     text txt, x+xd, y+yd, color, tfont
   end
 
@@ -130,7 +121,8 @@ class Test <  Graphics::Simulation
     @line << [mouse_x, mouse_y] if @draw
 
     # erase surface
-    rect 0, 0, w, h, CLEAR_COLOR, true
+    # rect 0, 0, w, h, CLEAR_COLOR, true
+    clear
 
     # draw whole path
     for i in 1...@line.n_points
